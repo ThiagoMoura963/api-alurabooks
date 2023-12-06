@@ -1,19 +1,27 @@
 import express from "express";
 import conectaNaDataBase from "./config/dbConnect.js";
-import routes from './routes/index.js';
+import routes from "./routes/index.js";
+import manipuladorDeErros from "./middleware/manipuladorDeErros.js";
+import manipulador404 from "./middleware/manipulador404.js";
 
 const conexao = await conectaNaDataBase();
 
 conexao.on("error", (erro) => {
-    console.log("erro de conexão", erro);
+  console.log("erro de conexão", erro);
 });
 
 conexao.once("open", () => {
-    console.log("conexão com o banco feita com sucesso!");
+  console.log("conexão com o banco feita com sucesso!");
 });
 
 const app = express();
+app.use(express.json());
 routes(app);
+
+app.use(manipulador404);
+
+app.use(manipuladorDeErros);
+
 // app.use(express.json());
 
 // const livros = [
