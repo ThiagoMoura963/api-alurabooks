@@ -3,10 +3,13 @@ import NaoEncontrado from "../error/NaoEncontrado.js";
 
 class LivroController {
     
-  static listarLivros = async(_, res, next) => {
+  static listarLivros = async(req, res, next) => {
     try {
-      const listaLivros = await livro.find({});
-      res.status(200).json(listaLivros);    
+      const buscaLivro = livro.find();
+
+      req.resultado = buscaLivro;
+
+      next();
     } catch (erro) {
       next(erro);
     }
@@ -75,14 +78,16 @@ class LivroController {
     }
   };
 
-  static listarLivroPorFiltro = async(req, res, next) => {
+  static listarLivroPorFiltro = async (req, res, next) => {
     try {
-      const busca = await processaBusca(req.query);
+      const busca = processaBusca(req.query);
 
       if(busca !== null) {
-        const livroPorFiltro = await livro.find(busca);
+        const livroPorFiltro = livro.find(busca);
+
+        req.resultado = livroPorFiltro;
         
-        res.status(200).json(livroPorFiltro);
+        next();
       } else {
         res.status(200).json([]);
       }
